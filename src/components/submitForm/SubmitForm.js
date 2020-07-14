@@ -1,7 +1,6 @@
 // on class
 import React from 'react';
 import { Formik } from 'formik';
-import * as Yup from 'yup';
 import {
   Form,
   Input,
@@ -37,58 +36,20 @@ class SubmitForm extends React.Component {
     acceptTerms: false,
   };
 
-  validationSchema = Yup.object().shape({
-    name: Yup.string().max(50, 'Слишком длинно - не более 50 символов').required('Имя обязательно'),
-    password: Yup.string()
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,40}$/,
-        'от 8 до 40 символов, как минимум одна цифра и одна заглавная буква',
-      )
-      .required('Пароль нужен'),
-    passwordConfirmation: Yup.string()
-      .oneOf([Yup.ref('password'), null], 'Надо точь-в-точь как пароль')
-      .required('Обязательно'),
-    email: Yup.string().email('Неправильная почта').required('Почту, пожалуйста'),
-    website: Yup.string().url('Неверный адрес сайта'),
-    age: Yup.number()
-      .typeError('Должно быть число')
-      .min(18, 'Юнцам тут не место')
-      .max(65, 'Займись лучше внуками, дедуля')
-      .required('Сколько тебе лет?'),
-    skills: Yup.array(),
-    acceptTerms: Yup.bool()
-      .oneOf([true], 'Нужно согласие')
-      .required('Обязательно')
-      .nullable('null'),
-  });
-
-  onSubmit = async (values, { resetForm }) => {
-    // const filteredSkills = values.skills.filter(Boolean);
-    /*
-    this.setState({
-      loading: true,
-    });
-    */
+  onSubmit = async (values) => {
     const body = {
       ...values,
-      // skills: filteredSkills,
     };
-
     try {
       const res = await getData(body);
       const { data } = res;
-      console.log(data);
       this.setState({
         userCreatingErrorMessage: null,
         netErrorMessage: null,
         successMessage: data,
       });
-
-      resetForm({
-        errorMessage: null,
-      });
     } catch (err) {
-      if (err.isAxiosError) {
+      if (err) {
         this.setState({
           netErrorMessage: 'Сервер не отвечает',
         });
@@ -99,19 +60,6 @@ class SubmitForm extends React.Component {
         netErrorMessage: null,
       });
     }
-  };
-
-  handleClearCloneError = () => {
-    this.setState({ userCreatingErrorMessage: null });
-  };
-
-  handleClearSuccess = () => {
-    this.setState({ successMessage: null });
-  };
-
-  handleClickButton = (evt) => {
-    evt.preventDefault();
-    document.getElementById('addSkillButton').click();
   };
 
   render() {
@@ -246,9 +194,7 @@ class SubmitForm extends React.Component {
             <Form.Item name="acceptTerms" shouldUpdate={false}>
               <Checkbox id="terms" name="acceptTerms" />
               <label htmlFor="terms">
-                {' '}
-                Согласен с условиями
-                <span className="required-star"> *</span>
+                <span className="required-star">Согласен с условиями *</span>
               </label>
             </Form.Item>
           </div>
