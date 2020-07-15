@@ -14,17 +14,19 @@ import {
   MailOutlined, UserOutlined, LinkOutlined, ThunderboltOutlined,
 } from '@ant-design/icons';
 
-import getData from '../../data/data';
+import getData from '../../dataRequest/DataRequest';
 // import './form.scss';
 
-class SubmitForm extends React.Component {
-  state = {
-    userCreatingErrorMessage: null,
-    successMessage: null,
-    netErrorMessage: null,
-  };
+const initState = {
+  userCreatingErrorMessage: null,
+  successMessage: null,
+  netErrorMessage: null,
+};
 
-  /* отвечает за ввод символов */
+class SubmitForm extends React.Component {
+  state = initState;
+
+  /* Это наши поля запроса, которые попадают на сервер */
   initialValues = {
     name: '',
     password: '',
@@ -41,8 +43,9 @@ class SubmitForm extends React.Component {
       ...values,
     };
     try {
-      const res = await getData(body);
-      const { data } = res;
+      const response = await getData(body);
+      const { data } = response;
+
       this.setState({
         userCreatingErrorMessage: null,
         netErrorMessage: null,
@@ -153,7 +156,6 @@ class SubmitForm extends React.Component {
               <InputNumber id="age" name="age" placeholder="27" size="large" />
             </Form.Item>
           </div>
-
           <div>
             <div
               name="skills"
@@ -189,16 +191,15 @@ class SubmitForm extends React.Component {
               Добавить суперспособность
             </AddRowButton>
           </div>
-
           <div>
-            <Form.Item name="acceptTerms" shouldUpdate={false}>
-              <Checkbox id="terms" name="acceptTerms" />
+            <Form.Item name="accept" shouldUpdate={false}>
+              <Checkbox id="terms" name="accept" />
               <label htmlFor="terms">
                 <span className="required-star">Согласен с условиями *</span>
               </label>
             </Form.Item>
           </div>
-
+          acceptTerms
           <div className="formButtonsContainer">
             <SubmitButton disabled={false} size="large" className="button">
               Зарегистрироваться
