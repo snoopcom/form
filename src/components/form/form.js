@@ -49,24 +49,24 @@ class SubmitForm extends React.Component {
       /* объект с данными */
       const response = await getData(body);
       const { data } = response;
-      console.log(response);
+      // console.log(response);
       this.setState({
-        // userCreatingErrorMessage: null,
+        userCreatingErrorMessage: null, // если почта такой нет, то ошибку не выдаем
         // netErrorMessage: null,
         successMessage: data,
       });
-    } catch (err) {
-      if (err) {
+    } catch (error) {
+      if (error) {
         this.setState({
           netErrorMessage: 'Сервер не отвечает',
         });
       }
-      /*
       this.setState({
-        userCreatingErrorMessage: err.response.data,
-        successMessage: null,
-        netErrorMessage: null,
-      }); */
+        // выдаем пользователю, что такая почта уже есть
+        userCreatingErrorMessage: error.response.data,
+        successMessage: null, // убираем сообщение о успешной регистрации
+        netErrorMessage: null, // и сообщение, что сервер не отвечает
+      });
     }
   };
 
@@ -179,7 +179,6 @@ class SubmitForm extends React.Component {
                 },
               ]}
             />
-
             <AddRowButton
               name="skills"
               createNewRow={(text) => text || ''}
