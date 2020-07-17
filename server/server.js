@@ -28,7 +28,6 @@ app.post('/sign-up', (request, response) => {
   const {
     name, password, email, website, age, skills,
   } = request.body;
-  console.log(request.body);
   if (users.findIndex((user) => email === user.email) > -1) {
     response.status(400);
     response.send('Пользователь с такой почтой уже существует');

@@ -1,9 +1,11 @@
 import React from 'react';
 import { Formik } from 'formik';
+// import * as Yup from 'yup';
 import {
   Form,
   Input,
   InputNumber,
+  Table,
   AddRowButton,
   Checkbox,
   SubmitButton,
@@ -13,10 +15,11 @@ import {
   MailOutlined, UserOutlined, LinkOutlined, ThunderboltOutlined,
 } from '@ant-design/icons';
 
-import getData from '../../dataRequest/DataRequest';
-// import './form.scss';
+// import getData from '../../data/data';
+import './form.scss';
 
 const initState = {
+  loading: false,
   userCreatingErrorMessage: null,
   successMessage: null,
   netErrorMessage: null,
@@ -25,7 +28,7 @@ const initState = {
 class SubmitForm extends React.Component {
   state = initState;
 
-  /* Это наши поля запроса, которые попадают на сервер */
+  /* поля, которые отправляются на сервер */
   initialValues = {
     name: '',
     password: '',
@@ -37,89 +40,78 @@ class SubmitForm extends React.Component {
     acceptTerms: false,
   };
 
-  onSubmit = async (values) => {
-    const body = {
+  onSubmit = async () => {
+    /* const body = {
       ...values,
-    };
+    }; */
     try {
-      const response = await getData(body);
-      const { data } = response;
+      // const response = await getData(body);
+      // const { data } = response;
 
       this.setState({
         userCreatingErrorMessage: null,
-        netErrorMessage: null,
-        successMessage: data,
+        //  netErrorMessage: null,
+        //  successMessage: data,
       });
     } catch (err) {
       if (err) {
         this.setState({
-          netErrorMessage: 'Сервер не отвечает',
+          //  netErrorMessage: 'Сервер не отвечает',
         });
       }
       this.setState({
         userCreatingErrorMessage: err.response.data,
-        successMessage: null,
-        netErrorMessage: null,
+        //  successMessage: null,
+        //  netErrorMessage: null,
       });
     }
   };
 
   render() {
-    const { successMessage, userCreatingErrorMessage, netErrorMessage } = this.state;
-
+    const { userCreatingErrorMessage } = this.state;
     return (
-      <Formik
-        initialValues={this.initialValues}
-        validationSchema={this.validationSchema}
-        onSubmit={this.onSubmit}
-      >
-        <Form className="form" onChange={this.handleClearSuccess}>
+      <Formik onSubmit={this.onSubmit} initialValues={this.initialValues}>
+        <Form>
           <div>
-            <label htmlFor="name">
+            <label htmlFor="1">
               Имя
               <span className="required-star"> *</span>
             </label>
-            <Form.Item name="name">
-              <Input
-                id="name"
-                name="name"
-                placeholder="Иван"
-                size="large"
-                suffix={<UserOutlined />}
-              />
+            <Form.Item name="1">
+              <Input id="1" name="1" placeholder="Иван" size="large" suffix={<UserOutlined />} />
             </Form.Item>
           </div>
           <div>
-            <label htmlFor="pwd">
+            <label htmlFor="password">
               Пароль
               <span className="required-star"> *</span>
             </label>
             <Form.Item name="password">
               <Input.Password
-                id="pwd"
+                id="password"
                 name="password"
-                placeholder="bu7UYvjl2nkj9WNshd"
+                placeholder="My-password-123"
                 size="large"
               />
             </Form.Item>
           </div>
           <div>
-            <label htmlFor="repwd">
+            <label htmlFor="passConfir">
               Повторите пароль
               <span className="required-star"> *</span>
             </label>
-            <Form.Item name="passwordConfirmation">
+            <Form.Item name="passConfir">
               <Input.Password
-                id="repwd"
-                name="passwordConfirmation"
-                placeholder="bu7UYvjl2nkj9WNshd"
+                id="passConfir"
+                name="passConfir"
+                placeholder="My-password-123"
                 size="large"
               />
             </Form.Item>
           </div>
           <div>
             <label htmlFor="email">
-              Электропочта
+              Почта
               <span className="required-star"> *</span>
             </label>
             <span className="error">{userCreatingErrorMessage}</span>
@@ -127,7 +119,7 @@ class SubmitForm extends React.Component {
               <Input
                 id="email"
                 name="email"
-                placeholder="ivan@mail.ru"
+                placeholder="my@mail.ru"
                 size="large"
                 onChange={this.handleClearCloneError}
                 suffix={<MailOutlined />}
@@ -135,12 +127,12 @@ class SubmitForm extends React.Component {
             </Form.Item>
           </div>
           <div>
-            <label htmlFor="site">Ваш сайт </label>
-            <Form.Item name="website">
+            <label htmlFor="site">Ваш сайт</label>
+            <Form.Item name="site">
               <Input
                 id="site"
-                name="website"
-                placeholder="http://www.ivan.ru"
+                name="site"
+                placeholder="http://www.my-site.ru"
                 size="large"
                 suffix={<LinkOutlined />}
               />
@@ -156,19 +148,19 @@ class SubmitForm extends React.Component {
             </Form.Item>
           </div>
           <div>
-            <div
+            <Table
               name="skills"
               rowKey={(row) => `${row.id}`}
               size="small"
               pagination={false}
               columns={[
                 {
-                  title: 'Cуперспособности',
+                  title: 'Skills',
                   key: 'name',
                   render: (text, record, i) => (
                     <Input
                       name={`skills[${i}]`}
-                      placeholder="Телепатия"
+                      placeholder="умею вкусно поесть"
                       size="large"
                       suffix={<ThunderboltOutlined />}
                       onPressEnter={this.handleClickButton}
@@ -185,20 +177,20 @@ class SubmitForm extends React.Component {
               size="large"
               type="primary"
               className="skillsButton"
-              id="addSkillButton"
+              id="addSkill"
             >
-              Добавить суперспособность
+              Добавить skill
             </AddRowButton>
           </div>
           <div>
-            <Form.Item name="accept" shouldUpdate={false}>
-              <Checkbox id="terms" name="accept" />
-              <label htmlFor="terms">
-                <span className="required-star">Согласен с условиями *</span>
+            <Form.Item name="acceptTerms" shouldUpdate={false}>
+              <Checkbox id="acceptTerms" name="acceptTerms" />
+              <label htmlFor="acceptTerms">
+                <span> Согласен с условиями</span>
+                <span className="required-star"> *</span>
               </label>
             </Form.Item>
           </div>
-          acceptTerms
           <div className="formButtonsContainer">
             <SubmitButton disabled={false} size="large" className="button">
               Зарегистрироваться
@@ -207,8 +199,6 @@ class SubmitForm extends React.Component {
               Очистить форму
             </ResetButton>
           </div>
-          <span className="success">{successMessage}</span>
-          <span className="error">{netErrorMessage}</span>
         </Form>
       </Formik>
     );
