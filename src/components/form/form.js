@@ -15,7 +15,7 @@ import {
   MailOutlined, UserOutlined, LinkOutlined, ThunderboltOutlined,
 } from '@ant-design/icons';
 
-// import getData from '../../data/data';
+import getData from '../../dataRequest/DataRequest';
 import './form.scss';
 
 const initState = {
@@ -32,53 +32,62 @@ class SubmitForm extends React.Component {
   initialValues = {
     name: '',
     password: '',
-    passwordConfirmation: '',
+    passConfir: '',
     email: '',
-    website: '',
+    site: '',
     age: null,
     skills: [''],
     acceptTerms: false,
   };
 
-  onSubmit = async () => {
-    /* const body = {
+  onSubmit = async (values) => {
+    const body = {
       ...values,
-    }; */
-    try {
-      // const response = await getData(body);
-      // const { data } = response;
+    };
 
+    try {
+      /* объект с данными */
+      const response = await getData(body);
+      const { data } = response;
+      console.log(response);
       this.setState({
-        userCreatingErrorMessage: null,
-        //  netErrorMessage: null,
-        //  successMessage: data,
+        // userCreatingErrorMessage: null,
+        // netErrorMessage: null,
+        successMessage: data,
       });
     } catch (err) {
       if (err) {
         this.setState({
-          //  netErrorMessage: 'Сервер не отвечает',
+          netErrorMessage: 'Сервер не отвечает',
         });
       }
+      /*
       this.setState({
         userCreatingErrorMessage: err.response.data,
-        //  successMessage: null,
-        //  netErrorMessage: null,
-      });
+        successMessage: null,
+        netErrorMessage: null,
+      }); */
     }
   };
 
   render() {
-    const { userCreatingErrorMessage } = this.state;
+    const { userCreatingErrorMessage, successMessage, netErrorMessage } = this.state;
     return (
       <Formik onSubmit={this.onSubmit} initialValues={this.initialValues}>
         <Form>
           <div>
-            <label htmlFor="1">
+            <label htmlFor="name">
               Имя
               <span className="required-star"> *</span>
             </label>
-            <Form.Item name="1">
-              <Input id="1" name="1" placeholder="Иван" size="large" suffix={<UserOutlined />} />
+            <Form.Item name="name">
+              <Input
+                id="name"
+                name="name"
+                placeholder="Алексей"
+                size="large"
+                suffix={<UserOutlined />}
+              />
             </Form.Item>
           </div>
           <div>
@@ -199,6 +208,8 @@ class SubmitForm extends React.Component {
               Очистить форму
             </ResetButton>
           </div>
+          <span>{successMessage}</span>
+          <span>{netErrorMessage}</span>
         </Form>
       </Formik>
     );

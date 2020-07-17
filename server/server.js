@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 // определяем обработчик для маршрута '/sign-up'
 app.post('/sign-up', (request, response) => {
   const {
-    name, password, email, website, age, skills,
+    name, password, email, site, age, skills,
   } = request.body;
   if (users.findIndex((user) => email === user.email) > -1) {
     response.status(400);
@@ -38,7 +38,7 @@ app.post('/sign-up', (request, response) => {
       name,
       password,
       email,
-      website,
+      site,
       age,
       skills,
     },
