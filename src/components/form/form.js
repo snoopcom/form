@@ -1,6 +1,5 @@
 import React from 'react';
 import { Formik } from 'formik';
-// import * as Yup from 'yup';
 import {
   Form,
   Input,
@@ -12,11 +11,13 @@ import {
   ResetButton,
 } from 'formik-antd';
 import {
-  MailOutlined, UserOutlined, LinkOutlined, ThunderboltOutlined,
+  MailOutlined, UserOutlined, LinkOutlined, StarOutlined,
 } from '@ant-design/icons';
 
 import getData from '../../dataRequest/DataRequest';
 import './form.scss';
+
+import validationSchema from '../../valides';
 
 const initState = {
   loading: false,
@@ -41,24 +42,27 @@ class SubmitForm extends React.Component {
   };
 
   onSubmit = async (values) => {
+    const filteredSkills = values.skills.filter((skill) => skill !== ''); // можно просто Boolean :)
+
     const body = {
       ...values,
+      skills: filteredSkills,
     };
 
     try {
       /* объект с данными */
       const response = await getData(body);
       const { data } = response;
-      // console.log(response);
       this.setState({
         userCreatingErrorMessage: null, // если почта такой нет, то ошибку не выдаем
-        // netErrorMessage: null,
-        successMessage: data,
+        netErrorMessage: null, // убираем соощение об ошибке сервера
+        successMessage: data, // выдаем сообщение об успехе
       });
     } catch (error) {
       if (error) {
         this.setState({
           netErrorMessage: 'Сервер не отвечает',
+          successMessage: null, // убираем сообщение об успешной регистрации
         });
       }
       this.setState({
@@ -73,8 +77,12 @@ class SubmitForm extends React.Component {
   render() {
     const { userCreatingErrorMessage, successMessage, netErrorMessage } = this.state;
     return (
-      <Formik onSubmit={this.onSubmit} initialValues={this.initialValues}>
-        <Form>
+      <Formik
+        onSubmit={this.onSubmit}
+        initialValues={this.initialValues}
+        validationSchema={validationSchema}
+      >
+        <Form className="form">
           <div>
             <label htmlFor="name">
               Имя
@@ -123,7 +131,7 @@ class SubmitForm extends React.Component {
               Почта
               <span className="required-star"> *</span>
             </label>
-            <span className="error">{userCreatingErrorMessage}</span>
+            <span className="errorEmail">{userCreatingErrorMessage}</span>
             <Form.Item name="email">
               <Input
                 id="email"
@@ -169,10 +177,9 @@ class SubmitForm extends React.Component {
                   render: (text, record, i) => (
                     <Input
                       name={`skills[${i}]`}
-                      placeholder="умею вкусно поесть"
+                      placeholder="Умею вкусно поесть"
                       size="large"
-                      suffix={<ThunderboltOutlined />}
-                      onPressEnter={this.handleClickButton}
+                      suffix={<StarOutlined />}
                       autoFocus
                     />
                   ),
@@ -207,8 +214,8 @@ class SubmitForm extends React.Component {
               Очистить форму
             </ResetButton>
           </div>
-          <span>{successMessage}</span>
-          <span>{netErrorMessage}</span>
+          <span className="success">{successMessage}</span>
+          <span className="error">{netErrorMessage}</span>
         </Form>
       </Formik>
     );

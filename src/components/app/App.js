@@ -5,7 +5,7 @@ import './app.scss';
 
 const App = () => (
   <div className="App">
-    <h2>Форма регистрации</h2>
+    <h2 className="header">Форма регистрации</h2>
     <Form />
   </div>
 );
