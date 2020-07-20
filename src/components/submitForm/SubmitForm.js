@@ -14,16 +14,15 @@ import {
   MailOutlined, UserOutlined, LinkOutlined, StarOutlined,
 } from '@ant-design/icons';
 
-import getData from '../../dataRequest/DataRequest';
-import './form.scss';
+import getData from '../../api/DataRequest';
+import './SubmitForm.scss';
 
-import validationSchema from '../../valides';
+import validationSchema from '../../api/ValidationSchema';
 
 const initState = {
-  loading: false,
-  userCreatingErrorMessage: null,
-  successMessage: null,
-  netErrorMessage: null,
+  errorMailExists: null,
+  successMessageServer: null,
+  errorMessageServer: null,
 };
 
 class SubmitForm extends React.Component {
@@ -42,11 +41,11 @@ class SubmitForm extends React.Component {
   };
 
   onSubmit = async (values) => {
-    const filteredSkills = values.skills.filter((skill) => skill !== ''); // можно просто Boolean :)
+    const skillsFilter = values.skills.filter((skill) => skill !== ''); // можно просто Boolean :)
 
     const body = {
       ...values,
-      skills: filteredSkills,
+      skills: skillsFilter,
     };
 
     try {
@@ -54,28 +53,28 @@ class SubmitForm extends React.Component {
       const response = await getData(body);
       const { data } = response;
       this.setState({
-        userCreatingErrorMessage: null, // если почта такой нет, то ошибку не выдаем
-        netErrorMessage: null, // убираем соощение об ошибке сервера
-        successMessage: data, // выдаем сообщение об успехе
+        errorMailExists: null, // если почта такой нет, то ошибку не выдаем
+        errorMessageServer: null, // убираем соощение об ошибке сервера
+        successMessageServer: data, // выдаем сообщение об успехе
       });
     } catch (error) {
       if (error) {
         this.setState({
-          netErrorMessage: 'Сервер не отвечает',
-          successMessage: null, // убираем сообщение об успешной регистрации
+          errorMessageServer: 'Сервер не отвечает',
+          successMessageServer: null, // убираем сообщение об успешной регистрации
         });
       }
       this.setState({
         // выдаем пользователю, что такая почта уже есть
-        userCreatingErrorMessage: error.response.data,
-        successMessage: null, // убираем сообщение о успешной регистрации
-        netErrorMessage: null, // и сообщение, что сервер не отвечает
+        errorMailExists: error.response.data,
+        successMessageServer: null, // убираем сообщение о успешной регистрации
+        errorMessageServer: null, // и сообщение, что сервер не отвечает
       });
     }
   };
 
   render() {
-    const { userCreatingErrorMessage, successMessage, netErrorMessage } = this.state;
+    const { errorMailExists, successMessageServer, errorMessageServer } = this.state;
     return (
       <Formik
         onSubmit={this.onSubmit}
@@ -131,14 +130,13 @@ class SubmitForm extends React.Component {
               Почта
               <span className="required-star"> *</span>
             </label>
-            <span className="errorEmail">{userCreatingErrorMessage}</span>
+            <span className="errorEmail">{errorMailExists}</span>
             <Form.Item name="email">
               <Input
                 id="email"
                 name="email"
                 placeholder="my@mail.ru"
                 size="large"
-                onChange={this.handleClearCloneError}
                 suffix={<MailOutlined />}
               />
             </Form.Item>
@@ -214,8 +212,8 @@ class SubmitForm extends React.Component {
               Очистить форму
             </ResetButton>
           </div>
-          <span className="success">{successMessage}</span>
-          <span className="error">{netErrorMessage}</span>
+          <span className="success">{successMessageServer}</span>
+          <span className="error">{errorMessageServer}</span>
         </Form>
       </Formik>
     );

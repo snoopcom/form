@@ -33,7 +33,6 @@ app.post('/sign-up', (request, response) => {
     response.send('Пользователь с такой почтой уже существует');
   }
   users = [
-    ...users,
     {
       name,
       password,

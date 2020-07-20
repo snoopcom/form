@@ -1,12 +1,12 @@
 import React from 'react';
-import Form from '../form/form';
+import SubmitForm from '../submitForm/SubmitForm';
 
-import './app.scss';
+import './App.scss';
 
 const App = () => (
   <div className="App">
     <h2 className="header">Форма регистрации</h2>
-    <Form />
+    <SubmitForm />
   </div>
 );
 
