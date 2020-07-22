@@ -14,10 +14,10 @@ import {
   MailOutlined, UserOutlined, LinkOutlined, StarOutlined,
 } from '@ant-design/icons';
 
-import getData from '../../api/DataRequest';
+import getData from '../../api/Index';
 import './SubmitForm.scss';
 
-import validationSchema from '../../api/ValidationSchema';
+import validationSchema from './ValidationSchema';
 
 const initState = {
   errorMailExists: null,
@@ -25,20 +25,22 @@ const initState = {
   errorMessageServer: null,
 };
 
+/* поля, которые отправляются на сервер */
+const initialValues = {
+  name: '',
+  password: '',
+  passConfir: '',
+  email: '',
+  site: '',
+  age: null,
+  skills: [''],
+  acceptTerms: false,
+};
+
 class SubmitForm extends React.Component {
   state = initState;
 
-  /* поля, которые отправляются на сервер */
-  initialValues = {
-    name: '',
-    password: '',
-    passConfir: '',
-    email: '',
-    site: '',
-    age: null,
-    skills: [''],
-    acceptTerms: false,
-  };
+  dataUser = initialValues;
 
   onSubmit = async (values) => {
     const skillsFilter = values.skills.filter((skill) => skill !== ''); // можно просто Boolean :)
@@ -58,7 +60,7 @@ class SubmitForm extends React.Component {
         successMessageServer: data, // выдаем сообщение об успехе
       });
     } catch (error) {
-      if (error) {
+      if (error.isAxiosError) {
         this.setState({
           errorMessageServer: 'Сервер не отвечает',
           successMessageServer: null, // убираем сообщение об успешной регистрации
@@ -78,7 +80,7 @@ class SubmitForm extends React.Component {
     return (
       <Formik
         onSubmit={this.onSubmit}
-        initialValues={this.initialValues}
+        initialValues={this.dataUser}
         validationSchema={validationSchema}
       >
         <Form className="form">
